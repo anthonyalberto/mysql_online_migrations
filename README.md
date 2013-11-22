@@ -1,7 +1,8 @@
 mysql_online_migrations
 =======================
 
-Patch Rails migrations to support MySQL 5.6 online migrations capabilities. Prior to MySQL 5.6, when adding / removing / renaming indexes and columns, MySQL would lock the writes of the whole table.
+Patch Rails migrations to support MySQL 5.6 online migrations capabilities.  
+Prior to MySQL 5.6, when adding / removing / renaming indexes and columns, MySQL would lock the writes of the whole table.  
 MySQL 5.6 adds a way to append `LOCK=NONE` to those alter table statements to allow online migrations.
 
 Scope of this gem
