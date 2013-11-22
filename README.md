@@ -14,5 +14,5 @@ Patch Rails migrations to automatically add `LOCK=NONE` in the following context
 - Add column : `add_column`, `add_timestamps`, `add_reference`
 - Remove column : `remove_column`, `remove_timestamps`, `remove_reference`
 
-MySQL is not compatible with `LOCK=NONE` for a few edge cases
+MySQL is not compatible with `LOCK=NONE` for a few edge cases  
 Therefore, we'll add an option to be able to prevent adding `LOCK=NONE`. `lock: true` should do the job.  
