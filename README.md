@@ -16,3 +16,6 @@ Patch Rails migrations to automatically add `LOCK=NONE` in the following context
 
 MySQL is not compatible with `LOCK=NONE` for a few edge cases  
 Therefore, we'll add an option to be able to prevent adding `LOCK=NONE`. `lock: true` should do the job.  
+
+Add a way to have a global config to turn off the feature altogether per-environment.  
+Eg, you may not have MySQL 5.6 on your CI service and therefore disable it for the test environment.
