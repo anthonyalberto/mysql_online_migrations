@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'mysql_online_migrations'
-  s.version     = '0.0.1'
+  s.version     = '0.1.0'
   s.summary     = "Use MySQL 5.6+ capacities to perform online migrations"
   s.description = "MySQL 5.6 adds a way to append `LOCK=NONE` to alter table statements to allow online migrations. Let's use it."
   s.authors     = ["Anthony Alberto"]
@@ -11,8 +11,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "activerecord", "~> 3.2.15"
   s.add_runtime_dependency "activesupport", "~> 3.2.15"
   s.add_runtime_dependency "mysql2"
-  s.add_development_dependency "activerecord", "~> 3.2.15"
-  s.add_development_dependency "rails", "~> 3.2.15"
   s.add_development_dependency "logger"
   s.add_development_dependency "rspec"
   s.add_development_dependency "pry"
