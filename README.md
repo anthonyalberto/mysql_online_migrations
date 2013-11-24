@@ -57,4 +57,5 @@ Here's a list of things you can't do with LOCK=NONE and therefore you should pro
   - when the table contains FULLTEXT indexes or a hidden FTS_DOC_ID column, or
   - when there are FOREIGN KEY constraints referring to the table, with ON…CASCADE or ON…SET NULL option.
 
-If you don't use `lock: true` when it's not supported, you'll get a MySQL exception. No risk to lock the table by accident.
+If you don't use `lock: true` when it's not supported, you'll get a MySQL exception. No risk to lock the table by accident.  
+It's therefore highly recommended to use it in development/test/staging environment before running migrations in production.
