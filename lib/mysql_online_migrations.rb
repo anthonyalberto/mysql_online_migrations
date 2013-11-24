@@ -7,6 +7,11 @@ module MysqlOnlineMigrations
   include Indexes
   include Columns
 
+  def self.included(base)
+    ActiveRecord::Base.send(:class_attribute, :mysql_online_migrations, :instance_writer => false)
+    ActiveRecord::Base.send("mysql_online_migrations=", true)
+  end
+
   def lock_statement(lock, with_comma = false)
     return "" if lock == true
     return "" unless perform_migrations_online?
@@ -19,7 +24,7 @@ module MysqlOnlineMigrations
   end
 
   def perform_migrations_online?
-    !(defined?(Rails) && Rails.application.config.active_record.mysql_online_migrations == false)
+    ActiveRecord::Base.mysql_online_migrations == true
   end
 end
 

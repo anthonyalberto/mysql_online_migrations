@@ -44,7 +44,6 @@ module Helpers
   end
 
   def setup
-    Object.send(:remove_const, :Rails) if defined?(Rails)
     ActiveRecord::Base.establish_connection(
       adapter: :mysql2,
       reconnect: false,
@@ -64,7 +63,7 @@ module Helpers
   end
 
   def set_ar_setting(value)
-    Rails.stub_chain(:application, :config, :active_record, :mysql_online_migrations).and_return(value)
+    ActiveRecord::Base.stub(:mysql_online_migrations).and_return(value)
   end
 
   def teardown

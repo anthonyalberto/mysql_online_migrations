@@ -28,14 +28,10 @@ RSpec.configure do |config|
 
   config.before(:all) do
     setup
-    load 'support/rails.rb'
   end
 
   config.after(:all) do
     teardown
   end
 
-  config.before(:each) do
-    set_ar_setting(true)
-  end
 end
