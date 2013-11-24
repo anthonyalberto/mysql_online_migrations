@@ -28,10 +28,12 @@ Patch Rails migrations to automatically add `LOCK=NONE` in the following context
 
 Usage
 =======================
-In a typical Rails app, just add it to your gem file :  
+In a typical Rails app, just add it to your Gemfile :  
 `gem 'mysql_online_migrations'`
 
-And you're ready for online migrations!
+Then run `bundle install`
+
+You're ready for online migrations! Please read the caveats section though.
 
 ### Turn it off for a whole environment
 Example for environment test (your CI might not use MySQL 5.6 yet), add the following to `config/environments/test.rb`:  
