@@ -2,6 +2,10 @@ module Helpers
   def execute(statement)
   end
 
+  def unstub_execute
+    @adapter.unstub(:execute)
+  end
+
   def stub_execute
     original_execute = @adapter.method(:execute)
     @adapter.stub(:execute) do |statement|
@@ -14,10 +18,33 @@ module Helpers
   end
 
   def add_lock_none(str, with_comma)
-    "#{str}#{with_comma ? ', ' : ''} LOCK=NONE"
+    "#{str}#{with_comma ? ' ,' : ''} LOCK=NONE"
+  end
+
+  def rebuild_table
+    @table_name = :testing
+    @adapter.drop_table @table_name rescue nil
+    @adapter.create_table @table_name do |t|
+      t.column :foo, :string, :limit => 100
+      t.column :bar, :string, :limit => 100
+      t.column :baz, :string, :limit => 100
+      t.column :extra, :string, :limit => 100
+      t.timestamps
+    end
+
+    @table_name = :testing2
+    @adapter.drop_table @table_name rescue nil
+    @adapter.create_table @table_name do |t|
+    end
+
+    @adapter.add_index :testing, :baz
+    @adapter.add_index :testing, [:bar, :baz]
+    @adapter.add_index :testing, :extra, name: "best_index_of_the_world2"
+    @adapter.add_index :testing, [:baz, :extra], name: "best_index_of_the_world3", unique: true
   end
 
   def setup
+    Object.send(:remove_const, :Rails) if defined?(Rails)
     ActiveRecord::Base.establish_connection(
       adapter: :mysql2,
       reconnect: false,
@@ -33,19 +60,7 @@ module Helpers
 
     @adapter = ActiveRecord::Base.connection
 
-    @table_name = :testing
-    @adapter.drop_table @table_name rescue nil
-    @adapter.create_table @table_name do |t|
-      t.column :foo, :string, :limit => 100
-      t.column :bar, :string, :limit => 100
-      t.column :baz, :string, :limit => 100
-      t.column :extra, :string, :limit => 100
-    end
-
-    @adapter.add_index :testing, :baz
-    @adapter.add_index :testing, [:bar, :baz]
-    @adapter.add_index :testing, :extra, name: "best_index_of_the_world2"
-    @adapter.add_index :testing, [:baz, :extra], name: "best_index_of_the_world3", unique: true
+    rebuild_table
   end
 
   def set_ar_setting(value)

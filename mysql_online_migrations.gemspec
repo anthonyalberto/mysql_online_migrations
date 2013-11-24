@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/anthonyalberto/mysql_online_migrations'
 
   s.add_runtime_dependency "activerecord", "~> 3.2.15"
+  s.add_runtime_dependency "activesupport", "~> 3.2.15"
   s.add_runtime_dependency "mysql2"
   s.add_development_dependency "activerecord", "~> 3.2.15"
   s.add_development_dependency "rails", "~> 3.2.15"

@@ -9,7 +9,6 @@ require 'rubygems'
 require 'bundler/setup'
 require 'mysql_online_migrations'
 require 'logger'
-#require 'rails'
 require 'pry'
 require 'support/helpers'
 require 'support/shared_examples/mysql_online_migrations'
@@ -25,11 +24,11 @@ RSpec.configure do |config|
   # order dependency and want to debug it, you can fix the order by providing
   # the seed, which is printed after each run.
   #     --seed 1234
-  config.order = 'random'
+  #config.order = 'random'
 
   config.before(:all) do
     setup
-    require 'support/rails'
+    load 'support/rails.rb'
   end
 
   config.after(:all) do
@@ -37,7 +36,6 @@ RSpec.configure do |config|
   end
 
   config.before(:each) do
-    stub_execute
     set_ar_setting(true)
   end
 end

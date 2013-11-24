@@ -3,6 +3,7 @@ PATH
   specs:
     mysql_online_migrations (0.0.1)
       activerecord (~> 3.2.15)
+      activesupport (~> 3.2.15)
       mysql2
 
 GEM

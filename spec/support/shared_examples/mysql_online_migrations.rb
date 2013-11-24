@@ -1,4 +1,8 @@
 shared_examples_for "a method that adds LOCK=NONE when needed" do
+  before(:each) do
+    stub_execute
+  end
+
   it "adds LOCK=NONE at the end of the query" do
     queries.each do |arguments, output|
       Array.wrap(output).each { |out| should_receive(:execute).with(add_lock_none(out, comma_before_lock_none)) }
@@ -23,6 +27,17 @@ shared_examples_for "a method that adds LOCK=NONE when needed" do
         Array.wrap(output).each { |out| should_receive(:execute).with(out) }
         arguments[-1] = arguments.last.merge(lock: true)
         @adapter.public_send(method_name, *arguments)
+      end
+    end
+  end
+end
+
+shared_examples_for "a request with LOCK=NONE that doesn't crash in MySQL" do
+  it "succeeds without exception" do
+    queries.each do |_, output|
+      Array.wrap(output).each do |out|
+        @adapter.execute(add_lock_none(out, comma_before_lock_none))
+        rebuild_table
       end
     end
   end

@@ -22,6 +22,7 @@ describe MysqlOnlineMigrations::Indexes do
     let(:method_name) { :add_index }
 
     it_behaves_like "a method that adds LOCK=NONE when needed"
+    it_behaves_like "a request with LOCK=NONE that doesn't crash in MySQL"
   end
 
   context "#remove_index" do
@@ -40,6 +41,7 @@ describe MysqlOnlineMigrations::Indexes do
     let(:method_name) { :remove_index }
 
     it_behaves_like "a method that adds LOCK=NONE when needed"
+    it_behaves_like "a request with LOCK=NONE that doesn't crash in MySQL"
   end
 
   context "#rename_index" do
@@ -60,5 +62,6 @@ describe MysqlOnlineMigrations::Indexes do
     let(:method_name) { :rename_index }
 
     it_behaves_like "a method that adds LOCK=NONE when needed"
+    it_behaves_like "a request with LOCK=NONE that doesn't crash in MySQL"
   end
 end
