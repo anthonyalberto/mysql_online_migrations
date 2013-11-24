@@ -1,7 +1,9 @@
 require 'active_record'
 require "active_record/connection_adapters/mysql2_adapter"
-require "mysql_online_migrations/columns"
-require "mysql_online_migrations/indexes"
+
+%w(*.rb).each do |path|
+  Dir["#{File.dirname(__FILE__)}/mysql_online_migrations/#{path}"].each { |f| require(f) }
+end
 
 module MysqlOnlineMigrations
   include Indexes
