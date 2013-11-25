@@ -16,7 +16,7 @@ List of requirements :
 
 - Use mysql2 adapter
 - Use ActiveRecord "~> 3.2.15"
-- Use MySQL or Percona Server 5.6.X
+- Use MySQL or Percona Server 5.6.X with InnoDB
 
 Scope of this gem
 =======================
