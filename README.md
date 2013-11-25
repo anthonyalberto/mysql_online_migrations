@@ -44,7 +44,7 @@ Example for environment test (your CI might not use MySQL 5.6 yet), add the foll
 Add `lock: true` to any of the method calls mentioned above. Example :  
 `add_index :users, :name, lock: true`
 
-The `lock: none` will be useful when hitting the caveats of `LOCK=NONE`. Please read the following section.
+The `lock: true` will be useful when hitting the caveats of `LOCK=NONE`. Please read the following section.
 
 Caveats
 =======================
