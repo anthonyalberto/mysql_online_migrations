@@ -49,7 +49,7 @@ The `lock: true` will be useful when hitting the caveats of `LOCK=NONE`. Please 
 Caveats
 =======================
 
-Here's a list of things you can't do with LOCK=NONE and therefore you should provide `lock: true`:  
+The MySQL manual contains a list of which DDL statements can be run with `LOCK=NONE` under [Table 14.5 Summary of Online Status for DDL Operations](http://dev.mysql.com/doc/refman/5.6/en/innodb-create-index-overview.html).  The short version is that __you can not yet__:
 
 - Index a column of type text
 - Change the type of a column
