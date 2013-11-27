@@ -1,4 +1,7 @@
 module Helpers
+  CATCH_STATEMENT_REGEX = /^(alter|create|drop|update) /i
+  DDL_STATEMENT_REGEX  = /^(alter|create|drop) /i
+
   def execute(statement)
   end
 
@@ -9,7 +12,7 @@ module Helpers
   def stub_execute
     original_execute = @adapter.method(:execute)
     @adapter.stub(:execute) do |statement|
-      if statement =~ /^(alter|create|drop) /i
+      if statement =~ CATCH_STATEMENT_REGEX
         execute(statement.squeeze(' ').strip)
       else
         original_execute.call(statement)
@@ -18,7 +21,11 @@ module Helpers
   end
 
   def add_lock_none(str, with_comma)
-    "#{str}#{with_comma ? ' ,' : ''} LOCK=NONE"
+    if str =~ DDL_STATEMENT_REGEX
+      "#{str}#{with_comma ? ' ,' : ''} LOCK=NONE"
+    else
+      str
+    end
   end
 
   def rebuild_table
@@ -28,6 +35,7 @@ module Helpers
       t.column :foo, :string, :limit => 100
       t.column :bar, :string, :limit => 100
       t.column :baz, :string, :limit => 100
+      t.column :bam, :string, :limit => 100, default: "test", null: false
       t.column :extra, :string, :limit => 100
       t.timestamps
     end

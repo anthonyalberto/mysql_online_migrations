@@ -2,6 +2,7 @@ require "spec_helper"
 
 describe MysqlOnlineMigrations::Indexes do
   let(:comma_before_lock_none) { false }
+  let(:queries_with_lock) { {} }
 
   context "#add_index" do
     let(:queries) do

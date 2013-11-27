@@ -15,6 +15,21 @@ module MysqlOnlineMigrations
       execute("ALTER TABLE #{quote_table_name(table_name)} #{change_column_sql(table_name, column_name, type, options)} #{lock_statement(lock, true)}")
     end
 
+    def change_column_default(table_name, column_name, default, options = {})
+      column = column_for(table_name, column_name)
+      change_column table_name, column_name, column.sql_type, options.merge(:default => default)
+    end
+
+    def change_column_null(table_name, column_name, null, default = nil, options = {})
+      column = column_for(table_name, column_name)
+
+      unless null || default.nil?
+        execute("UPDATE #{quote_table_name(table_name)} SET #{quote_column_name(column_name)}=#{quote(default)} WHERE #{quote_column_name(column_name)} IS NULL")
+      end
+
+      change_column table_name, column_name, column.sql_type, options.merge(:null => null)
+    end
+
     def rename_column(table_name, column_name, new_column_name, options = {})
       lock, options = extract_lock_from_options(options)
       execute("ALTER TABLE #{quote_table_name(table_name)} #{rename_column_sql(table_name, column_name, new_column_name)} #{lock_statement(lock, true)}")
