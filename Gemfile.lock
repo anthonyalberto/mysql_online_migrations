@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mysql_online_migrations (0.1.3)
+    mysql_online_migrations (0.1.4)
       activerecord (~> 3.2.15)
       activesupport (~> 3.2.15)
       mysql2
