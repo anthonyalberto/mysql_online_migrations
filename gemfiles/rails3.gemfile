@@ -1,0 +1,3 @@
+source :rubygems
+gem "activerecord", "3.2.15"
+gem "activesupport", "3.2.15"

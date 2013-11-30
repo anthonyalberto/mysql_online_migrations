@@ -1,6 +1,17 @@
 module Helpers
   CATCH_STATEMENT_REGEX = /^(alter|create|drop|update) /i
-  DDL_STATEMENT_REGEX  = /^(alter|create|drop) /i
+  DDL_STATEMENT_REGEX  = /^(alter|create (unique )? ?index|drop index) /i
+
+  def build_migration(method_name, args, &block)
+    migration = ActiveRecord::Migration.new
+    migration.instance_variable_set(:@test_method_name, method_name)
+    migration.instance_variable_set(:@test_args, args)
+    migration.instance_variable_set(:@test_block, block)
+    migration.define_singleton_method(:change) do
+      public_send(@test_method_name, *@test_args, &@test_block)
+    end
+    migration
+  end
 
   def execute(statement)
   end
@@ -33,9 +44,16 @@ module Helpers
     end
   end
 
+  def drop_all_tables
+    @adapter.tables.each do |table|
+      @adapter.drop_table(table) rescue nil
+    end
+  end
+
   def rebuild_table
     @table_name = :testing
-    @adapter.drop_table @table_name rescue nil
+    drop_all_tables
+
     @adapter.create_table @table_name do |t|
       t.column :foo, :string, :limit => 100
       t.column :bar, :string, :limit => 100
@@ -46,7 +64,6 @@ module Helpers
     end
 
     @table_name = :testing2
-    @adapter.drop_table @table_name rescue nil
     @adapter.create_table @table_name do |t|
     end
 

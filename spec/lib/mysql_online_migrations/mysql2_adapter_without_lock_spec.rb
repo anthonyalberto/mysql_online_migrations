@@ -3,7 +3,7 @@ require "spec_helper"
 describe ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock do
   context "#initialize" do
     it "successfully instantiates a working adapter" do
-
+      ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.new(@adapter).should be_active
     end
   end
 
@@ -12,37 +12,58 @@ describe ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock do
       context "with alter" do
         let(:query) { "alter " }
         it "adds ', LOCK=NONE'" do
-
+          @adapter_without_lock.lock_none_statement("alter ").should == ", LOCK=NONE"
         end
       end
       context "with drop index" do
         let(:query) { "drop index " }
         it "adds ' LOCK=NONE'" do
-
+          @adapter_without_lock.lock_none_statement("drop index ").should == " LOCK=NONE"
         end
       end
       context "with create index" do
         let(:query) { "create index " }
         it "adds ' LOCK=NONE'" do
-
+          @adapter_without_lock.lock_none_statement("create index ").should == " LOCK=NONE"
+        end
+      end
+      context "with a query with LOCK=NONE already there" do
+        it "doesn't add anything" do
+          @adapter_without_lock.lock_none_statement("alter  LOCK=NONE  ").should == ""
         end
       end
     end
 
     context "with mysql_online_migrations set to false" do
-      it "doesn't add anything to the request" do
+      before(:each) do
+        set_ar_setting(false)
+      end
 
+      after(:each) do
+        set_ar_setting(true)
+      end
+
+      it "doesn't add anything to the request" do
+        @adapter_without_lock.lock_none_statement("alter ").should == ""
       end
     end
   end
 
   context "#execute" do
     shared_examples_for "#execute that changes the SQL" do
-
+      it "adds LOCK=NONE at the end of the query" do
+        comma = query =~ /alter /i ? "," : ""
+        expected_output = "#{query} #{comma} LOCK=NONE"
+        @adapter_without_lock.should_receive(:original_execute).with(expected_output, nil)
+        @adapter_without_lock.execute(query)
+      end
     end
 
     shared_examples_for "#execute that doesn't change the SQL" do
-
+      it "just passes the query to original_execute" do
+        @adapter_without_lock.should_receive(:original_execute).with(query, nil)
+        @adapter_without_lock.execute(query)
+      end
     end
 
     context "with an optimizable DDL statement" do
@@ -54,8 +75,12 @@ describe ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock do
         let(:query) { "drop index " }
         it_behaves_like "#execute that changes the SQL"
       end
-      context "with create" do
+      context "with create index" do
         let(:query) { "create index " }
+        it_behaves_like "#execute that changes the SQL"
+      end
+      context "with create unique index" do
+        let(:query) { "create unique index " }
         it_behaves_like "#execute that changes the SQL"
       end
     end
