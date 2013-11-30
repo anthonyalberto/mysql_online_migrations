@@ -11,7 +11,6 @@ require 'mysql_online_migrations'
 require 'logger'
 require 'pry'
 require 'support/helpers'
-require 'support/shared_examples/mysql_online_migrations'
 
 RSpec.configure do |config|
   config.treat_symbols_as_metadata_keys_with_true_values = true

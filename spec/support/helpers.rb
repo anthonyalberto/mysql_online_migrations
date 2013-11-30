@@ -9,13 +9,18 @@ module Helpers
     @adapter.unstub(:execute)
   end
 
-  def stub_execute
-    original_execute = @adapter.method(:execute)
-    @adapter.stub(:execute) do |statement|
-      if statement =~ CATCH_STATEMENT_REGEX
-        execute(statement.squeeze(' ').strip)
+  def stub_adapter_without_lock
+    ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.stub(:new).and_return(@adapter_without_lock)
+  end
+
+  def stub_original_execute
+    original_execute = @adapter_without_lock.method(:original_execute)
+
+    @adapter_without_lock.stub(:original_execute) do |sql|
+      if sql =~ CATCH_STATEMENT_REGEX
+        execute(sql.squeeze(' ').strip)
       else
-        original_execute.call(statement)
+        original_execute.call(sql)
       end
     end
   end
@@ -66,6 +71,7 @@ module Helpers
     ActiveRecord::Base.logger.level = Logger::INFO
 
     @adapter = ActiveRecord::Base.connection
+    @adapter_without_lock = ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.new(@adapter)
 
     rebuild_table
   end
