@@ -10,7 +10,7 @@ module ActiveRecord
 
       alias_method :original_execute, :execute
       def execute(sql, name = nil)
-        if sql =~ /^(alter|create (unique)?   index|drop index) /i
+        if sql =~ /^(alter|create (unique)? index|drop index) /i
           sql = "#{sql} #{lock_none_statement(sql)}"
           puts "EXECUTING #{sql}"
         end
