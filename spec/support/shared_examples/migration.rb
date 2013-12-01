@@ -1,18 +1,24 @@
 shared_examples_for "a migration that adds LOCK=NONE when needed" do
   before(:each) do
+    @queries_received_by_regular_adapter = []
+    @queries_received_by_adapter_without_lock = []
     stub_adapter_without_lock
-    stub_original_execute
+    stub_execute(@adapter, :execute, :regular_execute)
+    stub_execute(@adapter_without_lock, :original_execute, :execute_without_lock)
   end
 
-  context "migrate up" do
-    it "sends each command with LOCK=NONE at the end to original_execute" do
-      queries.each do |args, sql|
-        migration = build_migration(method_name, args)
-        Array.wrap(sql).each { |statement| should_receive(:execute).with(add_lock_none(statement, comma_before_lock_none)) }
-        migration.migrate(:up)
-      end
+
+  it "executes the same query as the original adapter, with LOCK=NONE when required" do
+    @adapter.public_send(method_name, *args)
+    migration = build_migration(method_name, args)
+    migration.migrate(:up)
+    @queries_received_by_regular_adapter.length.should > 0
+    @queries_received_by_regular_adapter.length.should == @queries_received_by_adapter_without_lock.length
+    @queries_received_by_regular_adapter.each_with_index do |query, index|
+      query.should == add_lock_none(query, define_if_need_comma)
     end
   end
+
 
   context "migrate down" do
     it "adds LOCK=NONE to the statement when needed" do

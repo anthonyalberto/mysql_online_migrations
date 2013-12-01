@@ -13,7 +13,12 @@ module Helpers
     migration
   end
 
-  def execute(statement)
+  def regular_execute(statement)
+    @queries_received_by_regular_adapter << statement
+  end
+
+  def execute_without_lock(statement)
+    @queries_received_by_adapter_without_lock << statement
   end
 
   def unstub_execute
@@ -24,12 +29,12 @@ module Helpers
     ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.stub(:new).and_return(@adapter_without_lock)
   end
 
-  def stub_original_execute
-    original_execute = @adapter_without_lock.method(:original_execute)
+  def stub_execute(adapter, original_method, method_to_call)
+    original_execute = adapter.method(original_method)
 
-    @adapter_without_lock.stub(:original_execute) do |sql|
+    adapter.stub(original_method) do |sql|
       if sql =~ CATCH_STATEMENT_REGEX
-        execute(sql.squeeze(' ').strip)
+        send(method_to_call, sql.squeeze(' ').strip)
       else
         original_execute.call(sql)
       end
