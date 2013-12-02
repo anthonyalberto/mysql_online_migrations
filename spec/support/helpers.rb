@@ -1,5 +1,5 @@
 module Helpers
-  CATCH_STATEMENT_REGEX = /^(alter|create|drop|update) /i
+  CATCH_STATEMENT_REGEX = /^(alter|create|drop|update|rename) /i
   DDL_STATEMENT_REGEX  = /^(alter|create (unique )? ?index|drop index) /i
 
   def build_migration(method_name, args, &block)
