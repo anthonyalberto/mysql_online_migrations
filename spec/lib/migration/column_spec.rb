@@ -35,7 +35,6 @@ describe ActiveRecord::Migration do
     let(:migration_arguments) do
       [
         [:testing, :foo],
-        [:testing, [:foo, :bar]],
         [:testing, :foo, :bar]
       ]
     end

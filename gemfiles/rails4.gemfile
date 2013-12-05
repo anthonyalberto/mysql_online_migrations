@@ -1,1 +1,6 @@
-rails4
+source :rubygems
+gem "activerecord", "4.0.2"
+gem "activesupport", "4.0.2"
+gem "mysql2"
+gem "logger"
+gem "rspec"

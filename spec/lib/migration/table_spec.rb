@@ -29,6 +29,10 @@ describe ActiveRecord::Migration do
   end
 
   context "#rename_table" do
+    before(:each) do
+      @rescue_statement_when_stubbed = true
+    end
+
     let(:method_name) { :rename_table }
     let(:migration_arguments) do
       [

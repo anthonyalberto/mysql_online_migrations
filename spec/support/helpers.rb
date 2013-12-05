@@ -81,12 +81,9 @@ module Helpers
   def setup
     ActiveRecord::Base.establish_connection(
       adapter: :mysql2,
-      reconnect: false,
       database: "mysql_online_migrations",
-      username: "root",
-      host: "localhost",
-      encoding: "utf8",
-      socket: "/tmp/mysql.sock"
+      username: "travis",
+      encoding: "utf8"
     )
 
     ActiveRecord::Base.logger = Logger.new(STDOUT)

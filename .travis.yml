@@ -5,9 +5,6 @@ rvm:
 before_script:
   - mysql -e 'create database mysql_online_migrations;'
 
-env:
-  - "RAILS_VERSION=3.2.15"
-  - "RAILS_VERSION=4.0.1"
 gemfiles:
   - gemfiles/rails3
   - gemfiles/rails4

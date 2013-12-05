@@ -14,14 +14,24 @@ shared_examples_for "a migration that adds LOCK=NONE when needed" do
   it "executes the same query as the original adapter, with LOCK=NONE when required" do
     @migration_arguments.each do |migration_argument|
       reset_queries_collectors
-      @adapter.public_send(method_name, *migration_argument)
-      build_migration(method_name, migration_argument).migrate(:up)
+
+      begin
+        @adapter.public_send(method_name, *migration_argument)
+      rescue => e
+        raise e unless @rescue_statement_when_stubbed
+      end
+
+      begin
+        build_migration(method_name, migration_argument).migrate(:up)
+      rescue => e
+        raise e unless @rescue_statement_when_stubbed
+      end
+
       @queries_received_by_regular_adapter.length.should > 0
       @queries_received_by_regular_adapter.length.should == @queries_received_by_adapter_without_lock.length
       @queries_received_by_regular_adapter.each_with_index do |query, index|
         @queries_received_by_adapter_without_lock[index].should == add_lock_none(query, comma_before_lock_none)
       end
-      reset_queries_collectors
     end
   end
 end
