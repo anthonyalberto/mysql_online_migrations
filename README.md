@@ -1,7 +1,7 @@
 mysql_online_migrations
 =======================
 
-Patch Rails migrations to enforce MySQL 5.6 online migrations.
+Patch Rails migrations to enforce MySQL 5.6 online migrations
 Prior to MySQL 5.6, when adding / removing / renaming indexes and columns, MySQL would lock the writes of the whole table.
 MySQL 5.6 by default will try to apply the least locking possible. You however don't know what kind of locking it applies and there's situations where it can't allow writes during a migration (See Caveats).
 This gem enforces `LOCK=NONE` in all migration statements of Rails. Therefore, you're getting an error when MySQL cannot write during the migration so there's no surprise when rolling out in production.
