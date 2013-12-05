@@ -16,7 +16,6 @@ module ActiveRecord
       def execute(sql, name = nil)
         if sql =~ OPTIMIZABLE_DDL_REGEX
           sql = "#{sql} #{lock_none_statement(sql)}"
-          puts "EXECUTING #{sql}"
         end
         original_execute(sql, name)
       end
@@ -25,6 +24,7 @@ module ActiveRecord
         return "" unless ActiveRecord::Base.mysql_online_migrations
         return "" if sql =~ DDL_WITH_LOCK_NONE_REGEX
         comma_delimiter = (sql =~ DDL_WITH_COMMA_REGEX ? "," : "")
+        puts "ONLINE MIGRATION"
         "#{comma_delimiter} LOCK=NONE"
       end
     end
