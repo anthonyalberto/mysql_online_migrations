@@ -38,16 +38,19 @@ end
 
 shared_examples_for "a migration that succeeds in MySQL" do
   it "succeeds without exception" do
+    set_ar_setting(false) if ENV["TRAVIS"] # Travis doesn't run MySQL 5.6 ...
     migration_arguments.each do |migration_argument|
       migration = build_migration(method_name, migration_argument)
       migration.migrate(:up)
       rebuild_table
     end
+    set_ar_setting(true)
   end
 end
 
 shared_examples_for "a migration with a non-lockable statement" do
   it "raises a MySQL exception" do
+    set_ar_setting(false) if ENV["TRAVIS"]
     migration_arguments_with_lock.each do |migration_argument|
       migration = build_migration(method_name, migration_argument)
       begin
@@ -57,5 +60,6 @@ shared_examples_for "a migration with a non-lockable statement" do
       end
       rebuild_table
     end
+    set_ar_setting(true) if ENV["TRAVIS"]
   end
 end
