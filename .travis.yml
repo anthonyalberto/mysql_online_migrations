@@ -6,7 +6,7 @@ before_script:
   - mysql -e 'create database mysql_online_migrations;'
 
 gemfiles:
-  - gemfiles/rails3
-  - gemfiles/rails4
+  - gemfiles/rails3.gemfile
+  - gemfiles/rails4.gemfile
 
 script: bundle exec rspec spec
