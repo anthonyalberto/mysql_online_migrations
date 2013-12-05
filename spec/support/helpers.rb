@@ -1,21 +1,42 @@
 module Helpers
-  CATCH_STATEMENT_REGEX = /^(alter|create|drop|update) /i
-  DDL_STATEMENT_REGEX  = /^(alter|create|drop) /i
+  CATCH_STATEMENT_REGEX = /^(alter|create|drop|update|rename) /i
+  DDL_STATEMENT_REGEX  = /^(alter|create (unique )? ?index|drop index) /i
 
-  def execute(statement)
+  def build_migration(method_name, args, &block)
+    migration = ActiveRecord::Migration.new
+    migration.instance_variable_set(:@test_method_name, method_name)
+    migration.instance_variable_set(:@test_args, args)
+    migration.instance_variable_set(:@test_block, block)
+    migration.define_singleton_method(:change) do
+      public_send(@test_method_name, *@test_args, &@test_block)
+    end
+    migration
+  end
+
+  def regular_execute(statement)
+    @queries_received_by_regular_adapter << statement
+  end
+
+  def execute_without_lock(statement)
+    @queries_received_by_adapter_without_lock << statement
   end
 
   def unstub_execute
     @adapter.unstub(:execute)
   end
 
-  def stub_execute
-    original_execute = @adapter.method(:execute)
-    @adapter.stub(:execute) do |statement|
-      if statement =~ CATCH_STATEMENT_REGEX
-        execute(statement.squeeze(' ').strip)
+  def stub_adapter_without_lock
+    ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.stub(:new).and_return(@adapter_without_lock)
+  end
+
+  def stub_execute(adapter, original_method, method_to_call)
+    original_execute = adapter.method(original_method)
+
+    adapter.stub(original_method) do |sql|
+      if sql =~ CATCH_STATEMENT_REGEX
+        send(method_to_call, sql.squeeze(' ').strip)
       else
-        original_execute.call(statement)
+        original_execute.call(sql)
       end
     end
   end
@@ -28,9 +49,16 @@ module Helpers
     end
   end
 
+  def drop_all_tables
+    @adapter.tables.each do |table|
+      @adapter.drop_table(table) rescue nil
+    end
+  end
+
   def rebuild_table
     @table_name = :testing
-    @adapter.drop_table @table_name rescue nil
+    drop_all_tables
+
     @adapter.create_table @table_name do |t|
       t.column :foo, :string, :limit => 100
       t.column :bar, :string, :limit => 100
@@ -41,7 +69,6 @@ module Helpers
     end
 
     @table_name = :testing2
-    @adapter.drop_table @table_name rescue nil
     @adapter.create_table @table_name do |t|
     end
 
@@ -54,18 +81,16 @@ module Helpers
   def setup
     ActiveRecord::Base.establish_connection(
       adapter: :mysql2,
-      reconnect: false,
       database: "mysql_online_migrations",
-      username: "root",
-      host: "localhost",
-      encoding: "utf8",
-      socket: "/tmp/mysql.sock"
+      username: "travis",
+      encoding: "utf8"
     )
 
     ActiveRecord::Base.logger = Logger.new(STDOUT)
     ActiveRecord::Base.logger.level = Logger::INFO
 
     @adapter = ActiveRecord::Base.connection
+    @adapter_without_lock = ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.new(@adapter)
 
     rebuild_table
   end
