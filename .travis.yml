@@ -8,3 +8,5 @@ before_script:
 gemfiles:
   - gemfiles/rails3
   - gemfiles/rails4
+
+script: bundle exec rspec spec
