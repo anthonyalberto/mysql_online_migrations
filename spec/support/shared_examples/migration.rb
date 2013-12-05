@@ -3,6 +3,12 @@ def reset_queries_collectors
   @queries_received_by_adapter_without_lock = []
 end
 
+def staged_for_travis
+  set_ar_setting(false) if ENV["TRAVIS"] # Travis doesn't run MySQL 5.6. Run tests locally first.
+  yield
+  set_ar_setting(true) if ENV["TRAVIS"]
+end
+
 shared_examples_for "a migration that adds LOCK=NONE when needed" do
   before(:each) do
     stub_adapter_without_lock
@@ -38,28 +44,28 @@ end
 
 shared_examples_for "a migration that succeeds in MySQL" do
   it "succeeds without exception" do
-    set_ar_setting(false) if ENV["TRAVIS"] # Travis doesn't run MySQL 5.6 ...
-    migration_arguments.each do |migration_argument|
-      migration = build_migration(method_name, migration_argument)
-      migration.migrate(:up)
-      rebuild_table
+    staged_for_travis do
+      migration_arguments.each do |migration_argument|
+        migration = build_migration(method_name, migration_argument)
+        migration.migrate(:up)
+        rebuild_table
+      end
     end
-    set_ar_setting(true)
   end
 end
 
 shared_examples_for "a migration with a non-lockable statement" do
   it "raises a MySQL exception" do
-    set_ar_setting(false) if ENV["TRAVIS"]
-    migration_arguments_with_lock.each do |migration_argument|
-      migration = build_migration(method_name, migration_argument)
-      begin
-        migration.migrate(:up)
-      rescue ActiveRecord::StatementInvalid => e
-        e.message.should =~ /LOCK=NONE is not supported/
+    staged_for_travis do
+      migration_arguments_with_lock.each do |migration_argument|
+        migration = build_migration(method_name, migration_argument)
+        begin
+          migration.migrate(:up)
+        rescue ActiveRecord::StatementInvalid => e
+          e.message.should =~ /LOCK=NONE is not supported/
+        end
+        rebuild_table
       end
-      rebuild_table
     end
-    set_ar_setting(true) if ENV["TRAVIS"]
   end
 end
