@@ -13,7 +13,23 @@ module MysqlOnlineMigrations
   end
 
   def connection
-    @no_lock_adapter ||= ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.new(super)
+    original_connection = super
+    adapter_mode = original_connection.class.name == "ActiveRecord::ConnectionAdapters::Mysql2Adapter"
+
+    @original_adapter ||= if adapter_mode
+      original_connection
+    else
+      original_connection.instance_variable_get(:@delegate)
+    end
+
+    @no_lock_adapter ||= ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.new(@original_adapter)
+
+    if adapter_mode
+      @no_lock_adapter
+    else
+      original_connection.instance_variable_set(:@delegate, @no_lock_adapter)
+      original_connection
+    end
   end
 
   def with_lock

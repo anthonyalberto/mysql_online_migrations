@@ -10,11 +10,34 @@ describe MysqlOnlineMigrations do
   end
 
   context "#connection" do
-    it "memoizes an instance of Mysql2AdapterWithoutLock" do
-      ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.should_receive(:new)
-        .with(an_instance_of(ActiveRecord::ConnectionAdapters::Mysql2Adapter)).once.and_call_original
-      3.times { @connection = migration.connection }
-      @connection.should be_an_instance_of(ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock)
+    shared_examples_for "Mysql2AdapterWithoutLock created" do
+      it "memoizes an instance of Mysql2AdapterWithoutLock" do
+        ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.should_receive(:new)
+          .with(an_instance_of(ActiveRecord::ConnectionAdapters::Mysql2Adapter)).once.and_call_original
+        3.times { migration.connection }
+      end
+    end
+
+    context 'when migrating' do
+      it "returns an instance of Mysql2AdapterWithoutLock" do
+        migration.connection.should be_an_instance_of(ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock)
+      end
+
+      it_behaves_like "Mysql2AdapterWithoutLock created"
+    end
+
+    context 'when rolling back' do
+      before do
+        migration.instance_variable_set(:@connection, ActiveRecord::Migration::CommandRecorder.new(ActiveRecord::Base.connection))
+      end
+
+      it "returns an instance of ActiveRecord::Migration::CommandRecorder" do
+        recorder_connection = migration.connection
+        recorder_connection.should be_an_instance_of(ActiveRecord::Migration::CommandRecorder)
+        recorder_connection.instance_variable_get(:@delegate).should be_an_instance_of(ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock)
+      end
+
+      it_behaves_like "Mysql2AdapterWithoutLock created"
     end
   end
 

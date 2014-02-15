@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'mysql_online_migrations'
-  s.version     = '1.0.1'
+  s.version     = '1.0.2'
   s.summary     = "Use MySQL 5.6+ capacities to enforce online migrations"
   s.description = "MySQL 5.6 adds a `LOCK=NONE` option to make sure migrations are done with no locking. Let's use it."
   s.authors     = ["Anthony Alberto"]
