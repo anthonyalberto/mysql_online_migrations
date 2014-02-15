@@ -101,6 +101,15 @@ module Helpers
 
   def teardown
     @adapter.drop_table :testing rescue nil
+    @adapter.drop_table :test_rake rescue nil
     ActiveRecord::Base.primary_key_prefix_type = nil
+  end
+
+  def insert_version(version)
+    @adapter_without_lock.execute("INSERT into schema_migrations VALUES('#{version}')")
+  end
+
+  def clear_version
+    @adapter_without_lock.execute("TRUNCATE schema_migrations")
   end
 end
