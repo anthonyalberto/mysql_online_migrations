@@ -10,10 +10,12 @@ describe MysqlOnlineMigrations do
   end
 
   context "#connection" do
-    shared_examples_for "Mysql2AdapterWithoutLock created" do
+    shared_examples_for "Mysql2AdapterWithoutLock created" do |verbose|
       it "memoizes an instance of Mysql2AdapterWithoutLock" do
+        MysqlOnlineMigrations.verbose = verbose
+
         ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.should_receive(:new)
-          .with(an_instance_of(ActiveRecord::ConnectionAdapters::Mysql2Adapter), nil).once.and_call_original
+          .with(an_instance_of(ActiveRecord::ConnectionAdapters::Mysql2Adapter), verbose).once.and_call_original
         3.times { migration.connection }
       end
     end
@@ -24,6 +26,10 @@ describe MysqlOnlineMigrations do
       end
 
       it_behaves_like "Mysql2AdapterWithoutLock created"
+    end
+
+    context 'when migrating with verbose output' do
+      it_behaves_like "Mysql2AdapterWithoutLock created", true
     end
 
     context 'when rolling back' do
