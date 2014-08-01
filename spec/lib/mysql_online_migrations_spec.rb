@@ -13,7 +13,7 @@ describe MysqlOnlineMigrations do
     shared_examples_for "Mysql2AdapterWithoutLock created" do
       it "memoizes an instance of Mysql2AdapterWithoutLock" do
         ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.should_receive(:new)
-          .with(an_instance_of(ActiveRecord::ConnectionAdapters::Mysql2Adapter)).once.and_call_original
+          .with(an_instance_of(ActiveRecord::ConnectionAdapters::Mysql2Adapter), nil).once.and_call_original
         3.times { migration.connection }
       end
     end
