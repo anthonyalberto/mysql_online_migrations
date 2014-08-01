@@ -54,6 +54,8 @@ with_lock do
 end
 `````
 
+The `with_lock` method will be useful when hitting the caveats of `LOCK=NONE`. Please read the 'Caveats' section.
+
 ### Enable verbose output
 To enable an 'ONLINE MIGRATION' debug statement whenever an online migration is
 run, simply set the `MysqlOnlineMigrations.verbose` module variable to true.
@@ -61,8 +63,6 @@ Example (in a Rails app's config/initializers/mysql_online_migrations.rb):
 ````
 MysqlOnlineMigrations.verbose = true
 ````
-
-The `with_lock` method will be useful when hitting the caveats of `LOCK=NONE`. Please read the following section.
 
 Caveats
 =======================
