@@ -24,7 +24,6 @@ module ActiveRecord
         return "" unless ActiveRecord::Base.mysql_online_migrations
         return "" if sql =~ DDL_WITH_LOCK_NONE_REGEX
         comma_delimiter = (sql =~ DDL_WITH_COMMA_REGEX ? "," : "")
-        puts "ONLINE MIGRATION"
         "#{comma_delimiter} LOCK=NONE"
       end
     end
