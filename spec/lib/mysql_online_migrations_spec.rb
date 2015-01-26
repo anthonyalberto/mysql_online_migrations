@@ -50,4 +50,15 @@ describe MysqlOnlineMigrations do
       ActiveRecord::Base.mysql_online_migrations.should be_true
     end
   end
+
+  context "#without_lock" do
+    it "switches mysql_online_migrations flag to true and then back to original value after block execution" do
+      ActiveRecord::Base.mysql_online_migrations = false
+      ActiveRecord::Base.mysql_online_migrations.should be_false
+      migration.without_lock do
+        ActiveRecord::Base.mysql_online_migrations.should be_true
+      end
+      ActiveRecord::Base.mysql_online_migrations.should be_false
+    end
+  end
 end
