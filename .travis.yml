@@ -1,6 +1,8 @@
 language: ruby
 rvm:
   - 2.0.0
+  - 2.1.5
+  - 2.2.0
 
 before_script:
   - mysql -e 'create database mysql_online_migrations;'
@@ -8,5 +10,7 @@ before_script:
 gemfile:
   - gemfiles/rails3.gemfile
   - gemfiles/rails4.gemfile
+  - gemfiles/rails4_1.gemfile
+  - gemfiles/rails4_2.gemfile
 
 script: bundle exec rspec spec
