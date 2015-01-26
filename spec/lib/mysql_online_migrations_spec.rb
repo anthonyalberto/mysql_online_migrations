@@ -5,7 +5,7 @@ describe MysqlOnlineMigrations do
 
   context ".prepended" do
     it "sets ActiveRecord::Base.mysql_online_migrations to true" do
-      ActiveRecord::Base.mysql_online_migrations.should be_true
+      ActiveRecord::Base.mysql_online_migrations.should be_truthy
     end
   end
 
@@ -43,11 +43,22 @@ describe MysqlOnlineMigrations do
 
   context "#with_lock" do
     it "switches mysql_online_migrations flag to false and then back to original value after block execution" do
-      ActiveRecord::Base.mysql_online_migrations.should be_true
+      ActiveRecord::Base.mysql_online_migrations.should be_truthy
       migration.with_lock do
-        ActiveRecord::Base.mysql_online_migrations.should be_false
+        ActiveRecord::Base.mysql_online_migrations.should be_falsy
       end
-      ActiveRecord::Base.mysql_online_migrations.should be_true
+      ActiveRecord::Base.mysql_online_migrations.should be_truthy
+    end
+  end
+
+  context "#without_lock" do
+    it "switches mysql_online_migrations flag to true and then back to original value after block execution" do
+      ActiveRecord::Base.mysql_online_migrations = false
+      ActiveRecord::Base.mysql_online_migrations.should be_falsy
+      migration.without_lock do
+        ActiveRecord::Base.mysql_online_migrations.should be_truthy
+      end
+      ActiveRecord::Base.mysql_online_migrations.should be_falsy
     end
   end
 end

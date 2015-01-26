@@ -32,9 +32,19 @@ module MysqlOnlineMigrations
     end
   end
 
-  def with_lock
+  def with_lock(&blk)
+    with_enabled_online_migrations(false, &blk)
+  end
+
+  def without_lock(&blk)
+    with_enabled_online_migrations(true, &blk)
+  end
+
+  private
+
+  def with_enabled_online_migrations(enabled)
     original_value = ActiveRecord::Base.mysql_online_migrations
-    ActiveRecord::Base.mysql_online_migrations = false
+    ActiveRecord::Base.mysql_online_migrations = enabled
     yield
     ActiveRecord::Base.mysql_online_migrations = original_value
   end
