@@ -33,10 +33,10 @@ shared_examples_for "a migration that adds LOCK=NONE when needed" do
         raise e unless @rescue_statement_when_stubbed
       end
 
-      @queries_received_by_regular_adapter.length.should > 0
-      @queries_received_by_regular_adapter.length.should == @queries_received_by_adapter_without_lock.length
+      expect(@queries_received_by_regular_adapter.length).to be > 0
+      expect(@queries_received_by_regular_adapter.length).to eq(@queries_received_by_adapter_without_lock.length)
       @queries_received_by_regular_adapter.each_with_index do |query, index|
-        @queries_received_by_adapter_without_lock[index].should == add_lock_none(query, comma_before_lock_none)
+        expect(@queries_received_by_adapter_without_lock[index]).to eq(add_lock_none(query, comma_before_lock_none))
       end
     end
   end
@@ -62,7 +62,7 @@ shared_examples_for "a migration with a non-lockable statement" do
         begin
           migration.migrate(:up)
         rescue ActiveRecord::StatementInvalid => e
-          e.message.should =~ /LOCK=NONE is not supported/
+          expect(e.message).to match(/LOCK=NONE is not supported/)
         end
         rebuild_table
       end

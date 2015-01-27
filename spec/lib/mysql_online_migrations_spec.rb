@@ -5,14 +5,14 @@ describe MysqlOnlineMigrations do
 
   context ".prepended" do
     it "sets ActiveRecord::Base.mysql_online_migrations to true" do
-      ActiveRecord::Base.mysql_online_migrations.should be_truthy
+      expect(ActiveRecord::Base.mysql_online_migrations).to be_truthy
     end
   end
 
   context "#connection" do
     shared_examples_for "Mysql2AdapterWithoutLock created" do
       it "memoizes an instance of Mysql2AdapterWithoutLock" do
-        ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.should_receive(:new)
+        expect(ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock).to receive(:new)
           .with(an_instance_of(ActiveRecord::ConnectionAdapters::Mysql2Adapter)).once.and_call_original
         3.times { migration.connection }
       end
@@ -20,7 +20,7 @@ describe MysqlOnlineMigrations do
 
     context 'when migrating' do
       it "returns an instance of Mysql2AdapterWithoutLock" do
-        migration.connection.should be_an_instance_of(ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock)
+        expect(migration.connection).to be_an_instance_of(ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock)
       end
 
       it_behaves_like "Mysql2AdapterWithoutLock created"
@@ -33,8 +33,8 @@ describe MysqlOnlineMigrations do
 
       it "returns an instance of ActiveRecord::Migration::CommandRecorder" do
         recorder_connection = migration.connection
-        recorder_connection.should be_an_instance_of(ActiveRecord::Migration::CommandRecorder)
-        recorder_connection.instance_variable_get(:@delegate).should be_an_instance_of(ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock)
+        expect(recorder_connection).to be_an_instance_of(ActiveRecord::Migration::CommandRecorder)
+        expect(recorder_connection.instance_variable_get(:@delegate)).to be_an_instance_of(ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock)
       end
 
       it_behaves_like "Mysql2AdapterWithoutLock created"
@@ -43,11 +43,11 @@ describe MysqlOnlineMigrations do
 
   context "#with_lock" do
     it "switches mysql_online_migrations flag to false and then back to original value after block execution" do
-      ActiveRecord::Base.mysql_online_migrations.should be_truthy
+      expect(ActiveRecord::Base.mysql_online_migrations).to be_truthy
       migration.with_lock do
-        ActiveRecord::Base.mysql_online_migrations.should be_falsy
+        expect(ActiveRecord::Base.mysql_online_migrations).to be_falsy
       end
-      ActiveRecord::Base.mysql_online_migrations.should be_truthy
+      expect(ActiveRecord::Base.mysql_online_migrations).to be_truthy
     end
   end
 end

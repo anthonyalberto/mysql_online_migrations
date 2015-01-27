@@ -22,17 +22,17 @@ module Helpers
   end
 
   def unstub_execute
-    @adapter.unstub(:execute)
+    allow(@adapter).to receive(:execute).and_call_original
   end
 
   def stub_adapter_without_lock
-    ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.stub(:new).and_return(@adapter_without_lock)
+    allow(ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock).to receive(:new).and_return(@adapter_without_lock)
   end
 
   def stub_execute(adapter, original_method, method_to_call)
     original_execute = adapter.method(original_method)
 
-    adapter.stub(original_method) do |sql|
+    allow(adapter).to receive(original_method) do |sql|
       if sql =~ CATCH_STATEMENT_REGEX
         send(method_to_call, sql.squeeze(' ').strip)
       else
@@ -96,7 +96,7 @@ module Helpers
   end
 
   def set_ar_setting(value)
-    ActiveRecord::Base.stub(:mysql_online_migrations).and_return(value)
+    allow(ActiveRecord::Base).to receive(:mysql_online_migrations).and_return(value)
   end
 
   def teardown
