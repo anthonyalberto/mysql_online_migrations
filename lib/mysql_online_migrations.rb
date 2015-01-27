@@ -13,10 +13,15 @@ module MysqlOnlineMigrations
   def self.prepended(base)
     ActiveRecord::Base.send(:class_attribute, :mysql_online_migrations, :instance_writer => false)
     ActiveRecord::Base.send("mysql_online_migrations=", true)
+
+    ActiveRecord::Base.send(:class_attribute, :mysql_online_migrations_ignore, :instance_writer => false)
+    ActiveRecord::Base.send("mysql_online_migrations_ignore=", -> (version) { false })
   end
 
   def connection
     original_connection = super
+    return original_connection if ActiveRecord::Base.mysql_online_migrations_ignore.call(version)
+
     adapter_mode = original_connection.class.name == "ActiveRecord::ConnectionAdapters::Mysql2Adapter"
 
     @original_adapter ||= if adapter_mode

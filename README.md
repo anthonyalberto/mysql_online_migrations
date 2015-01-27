@@ -56,6 +56,16 @@ end
 
 The `with_lock` method will be useful when hitting the caveats of `LOCK=NONE`. Please read the 'Caveats' section.
 
+### Turn it off for old migrations
+
+Set up ignore based on version rule. Usually in your `config/application.rb`, something like that:
+
+```ruby
+config.active_record.mysql_online_migrations_ignore = -> (version) { version < "20141024152412" }
+```
+
+This will ignore all migrations before version `20141024152412`.
+
 ### Enable verbose output
 To enable an 'ONLINE MIGRATION' debug statement whenever an online migration is
 run, simply set the `MysqlOnlineMigrations.verbose` module variable to true.
