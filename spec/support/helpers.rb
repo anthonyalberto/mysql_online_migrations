@@ -1,8 +1,10 @@
 module Helpers
   CATCH_STATEMENT_REGEX = /^(alter|create|drop|update|rename) /i
   DDL_STATEMENT_REGEX  = /^(alter|create (unique )? ?index|drop index) /i
+  DEFAULT_VERSION = "20110603153213"
 
-  def build_migration(method_name, args, &block)
+  def build_migration(method_name, args, version=nil, &block)
+    version ||= DEFAULT_VERSION
     migration = ActiveRecord::Migration.new
     migration.instance_variable_set(:@test_method_name, method_name)
     migration.instance_variable_set(:@test_args, args)
@@ -10,6 +12,7 @@ module Helpers
     migration.define_singleton_method(:change) do
       public_send(@test_method_name, *@test_args, &@test_block)
     end
+    migration.version = version
     migration
   end
 
@@ -97,6 +100,10 @@ module Helpers
 
   def set_ar_setting(value)
     allow(ActiveRecord::Base).to receive(:mysql_online_migrations).and_return(value)
+  end
+
+  def set_ignore_setting(value)
+    allow(ActiveRecord::Base).to receive(:mysql_online_migrations_ignore).and_return(value)
   end
 
   def teardown
