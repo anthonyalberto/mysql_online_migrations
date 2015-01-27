@@ -7,6 +7,9 @@ require "active_record/connection_adapters/mysql2_adapter"
 end
 
 module MysqlOnlineMigrations
+
+  class << self; attr_accessor :verbose; end
+
   def self.prepended(base)
     ActiveRecord::Base.send(:class_attribute, :mysql_online_migrations, :instance_writer => false)
     ActiveRecord::Base.send("mysql_online_migrations=", true)
@@ -22,7 +25,7 @@ module MysqlOnlineMigrations
       original_connection.instance_variable_get(:@delegate)
     end
 
-    @no_lock_adapter ||= ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.new(@original_adapter)
+    @no_lock_adapter ||= ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.new(@original_adapter, MysqlOnlineMigrations.verbose)
 
     if adapter_mode
       @no_lock_adapter
@@ -38,6 +41,7 @@ module MysqlOnlineMigrations
     yield
     ActiveRecord::Base.mysql_online_migrations = original_value
   end
+
 end
 
 ActiveRecord::Migration.send(:prepend, MysqlOnlineMigrations)

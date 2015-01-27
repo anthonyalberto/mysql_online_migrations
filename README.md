@@ -1,9 +1,9 @@
 mysql_online_migrations
 =======================
 
-Patch Rails migrations to enforce MySQL 5.6 online migrations  
+Patch Rails migrations to enforce MySQL 5.6 online migrations
 Prior to MySQL 5.6, when adding / removing / renaming indexes and columns, MySQL would lock the writes of the whole table.
-MySQL 5.6 by default will try to apply the least locking possible. You however don't know what kind of locking it applies and there's situations where it can't allow writes during a migration (See Caveats).  
+MySQL 5.6 by default will try to apply the least locking possible. You however don't know what kind of locking it applies and there's situations where it can't allow writes during a migration (See Caveats).
 This gem enforces `LOCK=NONE` in all migration statements of Rails. Therefore, you're getting an error when MySQL cannot write during the migration so there's no surprise when rolling out in production.
 
 
@@ -54,7 +54,15 @@ with_lock do
 end
 `````
 
-The `with_lock` method will be useful when hitting the caveats of `LOCK=NONE`. Please read the following section.
+The `with_lock` method will be useful when hitting the caveats of `LOCK=NONE`. Please read the 'Caveats' section.
+
+### Enable verbose output
+To enable an 'ONLINE MIGRATION' debug statement whenever an online migration is
+run, simply set the `MysqlOnlineMigrations.verbose` module variable to true.
+Example (in a Rails app's config/initializers/mysql_online_migrations.rb):
+````
+MysqlOnlineMigrations.verbose = true
+````
 
 Caveats
 =======================

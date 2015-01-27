@@ -5,6 +5,11 @@ describe ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock do
     it "successfully instantiates a working adapter" do
       expect(ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.new(@adapter)).to be_active
     end
+
+    it "successfully instantiates a working adapter with verbose output" do
+      instance = ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.new(@adapter, true)
+      expect(instance.instance_variable_get(:@verbose)).to be_truthy
+    end
   end
 
   context "#lock_none_statement" do
