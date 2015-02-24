@@ -16,7 +16,6 @@ module MysqlOnlineMigrations
   end
 
   def connection
-    binding.pry
     original_connection = super
     adapter_mode = original_connection.class.name.in?(["ActiveRecord::ConnectionAdapters::Mysql2Adapter", "Octopus::Proxy"])
     octopus_mode = original_connection.class.name == "Octopus::Proxy"
