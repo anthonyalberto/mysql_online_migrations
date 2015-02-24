@@ -16,6 +16,7 @@ module MysqlOnlineMigrations
   end
 
   def connection
+    binding.pry
     original_connection = super
     adapter_mode = original_connection.class.name.in?(["ActiveRecord::ConnectionAdapters::Mysql2Adapter", "Octopus::Proxy"])
     octopus_mode = original_connection.class.name == "Octopus::Proxy"
@@ -27,9 +28,9 @@ module MysqlOnlineMigrations
     end
 
     @no_lock_adapter ||= if octopus_mode
-      ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.new(@original_adapter, MysqlOnlineMigrations.verbose)
+      Octopus::ProxyWithoutLock.new(Octopus.config, MysqlOnlineMigrations.verbose)
     else
-      ActiveRecord::ConnectionAdapters::OctopusProxyWithoutLock.new(@original_adapter, MysqlOnlineMigrations.verbose)
+      ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.new(@original_adapter, MysqlOnlineMigrations.verbose)
     end
 
     if adapter_mode
