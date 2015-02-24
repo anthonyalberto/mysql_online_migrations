@@ -17,7 +17,8 @@ module MysqlOnlineMigrations
 
   def connection
     original_connection = super
-    adapter_mode = original_connection.class.name == "ActiveRecord::ConnectionAdapters::Mysql2Adapter"
+    adapter_mode = original_connection.class.name.in?(["ActiveRecord::ConnectionAdapters::Mysql2Adapter", "Octopus::Proxy"])
+    octopus_mode = original_connection.class.name == "Octopus::Proxy"
 
     @original_adapter ||= if adapter_mode
       original_connection
@@ -25,7 +26,11 @@ module MysqlOnlineMigrations
       original_connection.instance_variable_get(:@delegate)
     end
 
-    @no_lock_adapter ||= ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.new(@original_adapter, MysqlOnlineMigrations.verbose)
+    @no_lock_adapter ||= if octopus_mode
+      ActiveRecord::ConnectionAdapters::Mysql2AdapterWithoutLock.new(@original_adapter, MysqlOnlineMigrations.verbose)
+    else
+      ActiveRecord::ConnectionAdapters::OctopusProxyWithoutLock.new(@original_adapter, MysqlOnlineMigrations.verbose)
+    end
 
     if adapter_mode
       @no_lock_adapter
