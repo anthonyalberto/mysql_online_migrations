@@ -1,4 +1,4 @@
-mysql_online_migrations
+mysql\_online\_migrations
 =======================
 
 Patch Rails migrations to enforce MySQL 5.6 online migrations
@@ -48,21 +48,21 @@ Example for environment test (your CI might not use MySQL 5.6 yet), add the foll
 ### Turn it off for a specific statement
 Call your migration statement within `with_lock` method. Example :
 
-`````
+```
 with_lock do
   add_index :my_table, :my_field
 end
-`````
+```
 
 The `with_lock` method will be useful when hitting the caveats of `LOCK=NONE`. Please read the 'Caveats' section.
 
 ### Enable verbose output
 To enable an 'ONLINE MIGRATION' debug statement whenever an online migration is
 run, simply set the `MysqlOnlineMigrations.verbose` module variable to true.
-Example (in a Rails app's config/initializers/mysql_online_migrations.rb):
-````
+Example (in a Rails app's config/initializers/mysql\_online\_migrations.rb):
+```
 MysqlOnlineMigrations.verbose = true
-````
+```
 
 Caveats
 =======================
@@ -72,8 +72,8 @@ The MySQL manual contains a list of which DDL statements can be run with `LOCK=N
 - Index a column of type text
 - Change the type of a column
 - Change the length of a column
-- Set a column to NOT NULL (at least not with the default SQL_MODE)
-- Adding an AUTO_INCREMENT column,
+- Set a column to NOT NULL (at least not with the default SQL\_MODE)
+- Adding an AUTO\_INCREMENT column,
 
 If you don't use the `with_lock` method when online migration is not supported, you'll get a MySQL exception. No risk to lock the table by accident.
 It's therefore highly recommended to use it in development/test/staging environment before running migrations in production.
