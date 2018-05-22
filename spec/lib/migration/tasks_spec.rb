@@ -7,7 +7,7 @@ describe "Migration Tasks" do
   end
 
   context 'db:migrate' do
-    it "creates the expected column" do
+    it "creates the expected table" do
       expect(@adapter_without_lock.tables).not_to include("test_rake")
       ActiveRecord::Migrator.migrate("spec/fixtures/db/migrate")
       expect(@adapter_without_lock.tables).to include("test_rake")
