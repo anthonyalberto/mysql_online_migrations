@@ -64,6 +64,18 @@ Example (in a Rails app's config/initializers/mysql\_online\_migrations.rb):
 MysqlOnlineMigrations.verbose = true
 ```
 
+### Run tests
+
+* Have MySQL >= 5.6 installed
+* `bundle install`
+* Start mysqld locally
+* `CREATE USER 'travis'@'localhost';`
+* `GRANT ALL PRIVILEGES ON mysql_online_migrations.* TO 'travis'@'localhost';`
+* `CREATE DATABASE mysql_online_migrations;`
+* `CREATE TABLE mysql_online_migrations.schema_migrations ( version varchar(255) NOT NULL, UNIQUE KEY unique_schema_migrations (version) ) ENGINE=InnoDB;`
+
+Then `bundle exec rspec`
+
 Caveats
 =======================
 
