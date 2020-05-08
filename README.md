@@ -9,12 +9,12 @@ This gem enforces `LOCK=NONE` in all migration statements of Rails. Therefore, y
 
 Requirements
 =======================
-Built for Rails 3.2.15+, including Rails 4.
+Built for Rails 4.2+, including Rails 5 and 6.
 
 List of requirements :
 
 - Use mysql2 adapter
-- Use Rails ">= 3.2.15"
+- Use Rails ">= 4.2.0"
 - Use MySQL or Percona Server 5.6.X with InnoDB
 
 Scope of this gem
