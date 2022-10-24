@@ -16,10 +16,19 @@ module ActiveRecord
 
       alias_method :original_execute, :execute
       def execute(sql, name = nil)
-        if sql =~ OPTIMIZABLE_DDL_REGEX
-          sql = "#{sql} #{lock_none_statement(sql)}"
+        new_sql = apply_lock_none_if_needed(sql)
+        original_execute(new_sql, name)
+      rescue ActiveRecord::StatementInvalid => e
+        if e.message =~ /Cannot change column type INPLACE/
+          original_execute(sql, name)
+        else
+          raise e
         end
-        original_execute(sql, name)
+      end
+
+      def apply_lock_none_if_needed(sql)
+        return sql unless sql =~ OPTIMIZABLE_DDL_REGEX
+        "#{sql} #{lock_none_statement(sql)}"
       end
 
       def lock_none_statement(sql)
